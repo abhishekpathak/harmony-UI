@@ -2,8 +2,8 @@ import {config} from './config.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Youtube from 'react-youtube';
-import './bootstrap/bootstrap.min.css';
-import './bootstrap/bootstrap-theme.min.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap-theme.css';
 import './index.css';
 import { Navbar, Nav, NavItem, Row, Col, Grid,
 Form, FormGroup, FormControl, Button, Table, Glyphicon, Image } from
