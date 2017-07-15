@@ -1,7 +1,6 @@
 export var config = {
-  appId: "303203860140031",
-  API_URL : "http://harmonymusic.herokuapp.com",
-  //API_URL : "http://localhost:5000",
+  appId: "902706029842457",
+  API_URL : "https://harmonyserver.herokuapp.com",
   PLAYLIST_TRIM_SIZE: 5,
   INIT_STATE: {
     elements: [
