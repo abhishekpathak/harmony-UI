@@ -1,0 +1,33 @@
+.title {
+    cursor:pointer;
+    color:rgb(180,180,180);
+}
+
+.title:hover {
+    text-decoration: underline;
+}
+
+.glyphicon-heart {
+    color: red;
+}
+
+.glyphicon-heart-empty {
+    color: white;
+}
+
+.searchButton {
+    color:green;
+}
+
+.close {
+    color: white;
+}
+
+.playlist-thumbnail {
+    height:40px;
+    width:40px;
+}
+
+body {
+    background-color: rgb(48,48,48);
+}
