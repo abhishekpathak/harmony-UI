@@ -43,7 +43,7 @@ class LoveButton extends React.Component {
     }
 
     componentDidMount(){
-        var uri = encodeURI(config.API_URL + "/library/songexists?videoid=" + this.props.element.videoid + "&userid=" + this.props.user.id);
+        var uri = encodeURI(process.env.REACT_APP_API_URL + "/library/songexists?videoid=" + this.props.element.videoid + "&userid=" + this.props.user.id);
         fetch(uri).then((response) => {
         return response.json();
         }).then((data) => {
@@ -53,7 +53,7 @@ class LoveButton extends React.Component {
 
     toggleLoveSong() {
         var operation = this.state.in_library === true ? "remove" : "add";
-        var uri = encodeURI(config.API_URL + "/library?operation=" + operation + "&username=" + this.props.user.name + "&userid=" + this.props.user.id + "&songtrack=" + this.props.element.track + "&songartist=&songrating=&songfav=&songvideoid=" + this.props.element.videoid);
+        var uri = encodeURI(process.env.REACT_APP_API_URL + "/library?operation=" + operation + "&username=" + this.props.user.name + "&userid=" + this.props.user.id + "&songtrack=" + this.props.element.track + "&songartist=&songrating=&songfav=&songvideoid=" + this.props.element.videoid);
         fetch(uri).then((response) => {
             if (response.ok) {
                 this.setState({
@@ -138,7 +138,7 @@ class Recommendations extends React.Component {
     }
 
     getRecommendations(videoid) {
-        var uri = encodeURI(config.API_URL + "/recommendations?q=" + videoid);
+        var uri = encodeURI(process.env.REACT_APP_API_URL + "/recommendations?q=" + videoid);
         fetch(uri).then((response) => {
             return response.json();
             }).then((data) => {
@@ -292,7 +292,7 @@ class Header extends React.Component {
 
     handleSubmit(e){
         e.preventDefault();
-        var uri = encodeURI(config.API_URL + "/query?q=" + this.state.value);
+        var uri = encodeURI(process.env.REACT_APP_API_URL + "/query?q=" + this.state.value);
         fetch(uri).then((response) => {
             return response.json();
             }).then((data) => {
@@ -422,7 +422,7 @@ class Total extends React.Component {
      }
 
      _playNextFromLibrary() {
-        var uri = encodeURI(config.API_URL + "/library/get?userid=" + this
+        var uri = encodeURI(process.env.REACT_APP_API_URL + "/library/get?userid=" + this
         .props.user.id)
         fetch(uri).then((response) => {
             return response.json();
@@ -495,7 +495,7 @@ class Total extends React.Component {
      }
 
      updateLastPlayedTimestamp() {
-         var uri = encodeURI(config.API_URL + "/library/updatelastplayed?userid=" +
+         var uri = encodeURI(process.env.REACT_APP_API_URL + "/library/updatelastplayed?userid=" +
          this.props.user.id + "&videoid=" + this.state.elements[this.state
          .current_index].videoid);
          fetch(uri).then((response) => {
@@ -587,10 +587,9 @@ const responseFacebook = (response) => {
         );
   }
 }
-
 ReactDOM.render(
   <FacebookLogin
-    appId={config.appId}
+    appId={process.env.REACT_APP_APP_ID}
     autoLoad={true}
     fields="name,email,picture"
     callback={responseFacebook}
