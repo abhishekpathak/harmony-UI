@@ -5,20 +5,25 @@ import Youtube from 'react-youtube';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import './index.css';
-import { Navbar, Nav, NavItem, Row, Col, Grid,
-Form, FormGroup, FormControl, Button, Table, Glyphicon, Image } from
+import { Navbar, Row, Col, Grid,
+ Button, Table, Glyphicon, Image } from
 'react-bootstrap';
 import FacebookLogin from 'react-facebook-login';
+
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import SearchBar from 'material-ui-search-bar';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 
 class Recommendation extends React.Component {
     render() {
         return (
             <tr>
-            <td className="col-lg-2">
+            <td className="col-lg-1">
             <Image className="playlist-thumbnail" src={"https://img.youtube.com/vi/" + this.props.videoid+ "/0.jpg"} responsive />
             </td>
-            <td className="col-lg-10">
+            <td className="col-lg-11">
             <p className="title"
             onClick={ () => {this.props.enqueue(
                 {
@@ -86,12 +91,12 @@ class Playlist extends React.Component {
 
     render() {
         const playlist = this.props.elements.map((element, index) =>
-        <tr key={element.hashid}>
+        <tr key={element.hashid} className={this.props.isCurrentSong(element.hashid) ? "current-song":"other-song"}>
         <td>
         <Image className="playlist-thumbnail" src={"https://img.youtube.com/vi/" + element.videoid+ "/0.jpg"} responsive />
         </td>
         <td>
-            <p className="title"
+            <p className={this.props.isCurrentSong(element.hashid) ? "current-song":"title"}
             onClick={ () => {this.props.handleSongClick(element.hashid)} }
             >
             {element.track}
@@ -190,20 +195,20 @@ class VideoBox extends React.Component {
     timer(event) {
         // persist only if the video is playing
         if (event.target.getPlayerState() === 1) {
-            var time = parseInt(event.target.getCurrentTime());
+            var time = parseInt(event.target.getCurrentTime(), 10);
             this.props.persist_seek(time);
         };
     }
 
     render() {
         const opts = {
-            height: 300,
-            width: 480,
+            height: 80,
+            width: 144,
             playerVars: {
                 'rel': 0,
                 'controls': 1,
                 'autoplay': this.props.playing === true ? 1 : 0,
-                'start': parseInt(this.props.seek),
+                'start': parseInt(this.props.seek, 10),
                 'showinfo': 0,
                 'modestbranding': 1,
                 'iv_load_policy': 3
@@ -238,13 +243,6 @@ class LeftMain extends React.Component {
     render() {
         return(
             <div className="leftmain">
-                <VideoBox
-                videoid={this.props.elements[this.props.current_index].videoid}
-                playing={this.props.playing}
-                seek={this.props.seek}
-                persist_seek={this.props.persist_seek}
-                triggerOnStateChange={this.props.triggerOnStateChange}
-                />
                 <Playlist
                     elements={this.props.elements}
                     current_index={this.props.current_index}
@@ -255,6 +253,7 @@ class LeftMain extends React.Component {
                     handleSongClick={this.props.handleSongClick}
                     removeFromPlaylist={this.props.removeFromPlaylist}
                     toggleLoveSong={this.props.toggleLoveSong}
+                    isCurrentSong={this.props.isCurrentSong}
                 />
             </div>
         )
@@ -281,18 +280,11 @@ class Header extends React.Component {
             value: ""
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(e){
-        this.setState({
-            value: e.target.value
-        })
-    }
-
-    handleSubmit(e){
-        e.preventDefault();
+    handleSubmit(){
         var uri = encodeURI(process.env.REACT_APP_API_URL + "/query?q=" + this.state.value);
+        console.log(uri);
         fetch(uri).then((response) => {
             return response.json();
             }).then((data) => {
@@ -304,24 +296,47 @@ class Header extends React.Component {
     }
 
     render() {
-        const navbarInstance = (
-                <Form inline onSubmit={this.handleSubmit}>
-                <FormGroup controlId="formBasicText">
-                  <FormControl
-                    type="text"
-                    placeholder="search..."
-                    onChange={this.handleChange}
-                  />
-                </FormGroup>
-                  <Button type="submit" className="searchButton">
-                  <Glyphicon glyph="search"/>
-                  </Button>
-                </Form>
+        const searchform = (
+            <SearchBar
+                onChange={(value) => this.setState({value:value})}
+                onRequestSearch={() => this.handleSubmit()}
+                style={{
+                    margin: '0 auto',
+                    maxWidth: 600
+                }}
+            />
+        );
+
+        const logo = (
+            <div className="logo-box">
+                <span className="logo-1">Harmony </span>
+                <span className="logo-2">Music</span>
+            </div>
+        )
+
+        const avatar = (
+            <Image src={this.props.user.avatar} circle responsive/>
+        )
+
+        const searchbar = (
+                <Row>
+                    <Col md={2} lg={2}>
+                        {logo}
+                    </Col>
+                    <Col md={1} lg={1}></Col>
+                    <Col md={6} lg={6}>
+                        {searchform}
+                    </Col>
+                    <Col md={2} lg={2}></Col>
+                    <Col md={1} lg={1}>
+                        {avatar}
+                    </Col>
+                </Row>
          );
 
         return (
-        <Navbar inverse>
-            {navbarInstance}
+        <Navbar fixedTop className="header">
+            {searchbar}
         </Navbar>
         )
     }
@@ -329,23 +344,45 @@ class Header extends React.Component {
 
 class Footer extends React.Component {
     render() {
+
+        const controls = (
+            <div className="controls-box">
+                <Glyphicon glyph="step-backward" onClick={this.props.handlePrev} className="controls"/>
+                <Glyphicon glyph={this.props.playing === true ? "pause":"play"} onClick={this.props.togglePlay} className="controls-play"/>
+                <Glyphicon glyph="step-forward" onClick={this.props.handleNext} className="controls"/>
+            </div>
+        );
+        const equalizer = (
+            <img className="equalizer" src="https://raw.githubusercontent.com/abhishekpathak/melody/master/img/music-playing.gif" alt="Equalizer" />
+        )
+
         const navbarInstance = (
-              <Nav>
-                <NavItem onClick={this.props.handlePrev}>
-                <Glyphicon glyph="backward"/>
-                </NavItem>
-                <NavItem onClick={this.props.togglePlay}>
-                <Glyphicon glyph={this.props.playing === true ? "pause":"play"}/>
-                </NavItem>
-                <NavItem onClick={this.props.handleNext}>
-                <Glyphicon glyph="forward"/>
-                </NavItem>
-                <NavItem>{this.props.track}</NavItem>
-              </Nav>
+                      <Row>
+                          <Col lg={2}>
+                              <VideoBox
+                                  videoid={this.props.elements[this.props.current_index].videoid}
+                                  playing={this.props.playing}
+                                  seek={this.props.seek}
+                                  persist_seek={this.props.persist_seek}
+                                  triggerOnStateChange={this.props.triggerOnStateChange}
+                              />
+                          </Col>
+                          <Col lg={2}></Col>
+                          <Col lg={4}>
+                              <p className="marquee"><span>
+                              {this.props.track}
+                              </span></p>
+                              {controls}
+                              </Col>
+                          <Col lg={3}></Col>
+                          <Col lg={1}>
+                              {equalizer}
+                          </Col>
+                      </Row>
          );
 
         return (
-        <Navbar inverse fixedBottom className = "footer">
+        <Navbar fixedBottom className="footer">
             {navbarInstance}
         </Navbar>
         )
@@ -372,6 +409,7 @@ class Total extends React.Component {
         this.removeFromPlaylist = this.removeFromPlaylist.bind(this);
         this._playNextFromPlaylist = this._playNextFromPlaylist.bind(this);
         this.triggerOnStateChange = this.triggerOnStateChange.bind(this);
+        this.isCurrentSong = this.isCurrentSong.bind(this);
     }
 
     findSonginPlaylist(hashid){
@@ -382,6 +420,10 @@ class Total extends React.Component {
             }
         }
         return -1;
+    }
+
+    isCurrentSong(hashid) {
+        return this.findSonginPlaylist(hashid) === this.state.current_index;
     }
 
      getHashid() {
@@ -549,6 +591,7 @@ class Total extends React.Component {
                triggerOnStateChange={this.triggerOnStateChange}
                removeFromPlaylist={this.removeFromPlaylist}
                toggleLoveSong={this.toggleLoveSong}
+               isCurrentSong={this.isCurrentSong}
                /></Col>
 
                <Col lg={5} md={4}><RightMain
@@ -557,11 +600,16 @@ class Total extends React.Component {
                /></Col>
             </Row>
             <Footer
-            track={current_song.track}
-            playing={this.state.playing}
-            handlePrev={this.handlePrev}
-            handleNext={this.handleNext}
-            togglePlay={this.togglePlay}
+                elements={this.state.elements}
+                current_index={this.state.current_index}
+                seek={this.state.seek}
+                persist_seek={this.persist_seek}
+                triggerOnStateChange={this.triggerOnStateChange}
+                track={current_song.track}
+                playing={this.state.playing}
+                handlePrev={this.handlePrev}
+                handleNext={this.handleNext}
+                togglePlay={this.togglePlay}
             />
             </Grid>
         )
@@ -569,20 +617,19 @@ class Total extends React.Component {
 }
 
 const responseFacebook = (response) => {
-  var user = {
+  let user = {
     name: null,
     id: null,
     avatar: null
   };
-  if (response.email != null) {
-      user.name = response.name
-      user.id = response.email
-      user.avatar = response.picture.data.url
-      //ReactDOM.unmountComponentAtNode('root');
+  if (response.email !== null) {
+      user.name = response.name;
+      user.id = response.email;
+      user.avatar = response.picture.data.url;
       ReactDOM.render(
-        <Total
-        user={user}
-        />,
+          <MuiThemeProvider>
+              <Total user={user}/>
+          </MuiThemeProvider>,
         document.getElementById('root')
         );
   }
