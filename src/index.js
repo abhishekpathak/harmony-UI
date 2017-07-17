@@ -13,6 +13,10 @@ import FacebookLogin from 'react-facebook-login';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import SearchBar from 'material-ui-search-bar';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import MdPlayCircleFilled from 'react-icons/lib/md/play-circle-filled';
+import MdPauseCircleFilled from 'react-icons/lib/md/pause-circle-filled';
+import MdSkipPrevious from 'react-icons/lib/md/skip-previous';
+import MdSkipNext from 'react-icons/lib/md/skip-next';
 injectTapEventPlugin();
 
 
@@ -85,11 +89,9 @@ class Playlist extends React.Component {
         this.props.persist();
     }
 
-    handleLoveButtonColor() {
-
-    }
 
     render() {
+
         const playlist = this.props.elements.map((element, index) =>
         <tr key={element.hashid} className={this.props.isCurrentSong(element.hashid) ? "current-song":"other-song"}>
         <td>
@@ -109,12 +111,16 @@ class Playlist extends React.Component {
             />
         </td>
         <td>
-            <Button
-            className="close"
-            onClick={ () => {this.props.removeFromPlaylist(element.hashid)} }
-            >
-            &times;
-            </Button>
+            {this.props.isCurrentSong(element.hashid) ? (null) :
+                (
+                <Button
+                className="close"
+                onClick={ () => {this.props.removeFromPlaylist(element.hashid)} }
+                >
+                &times;
+                </Button>
+                )
+            }
         </td>
         </tr>
         );
@@ -335,7 +341,7 @@ class Header extends React.Component {
          );
 
         return (
-        <Navbar fixedTop className="header">
+        <Navbar fixedTop fluid className="header">
             {searchbar}
         </Navbar>
         )
@@ -345,15 +351,22 @@ class Header extends React.Component {
 class Footer extends React.Component {
     render() {
 
+        let playpause = null;
+        if (this.props.playing === true) {
+            playpause = (<MdPauseCircleFilled onClick={this.props.togglePlay} className="controls-play"/>)
+        } else {
+            playpause = (<MdPlayCircleFilled onClick={this.props.togglePlay} className="controls-play"/>)
+        }
+
         const controls = (
             <div className="controls-box">
-                <Glyphicon glyph="step-backward" onClick={this.props.handlePrev} className="controls"/>
-                <Glyphicon glyph={this.props.playing === true ? "pause":"play"} onClick={this.props.togglePlay} className="controls-play"/>
-                <Glyphicon glyph="step-forward" onClick={this.props.handleNext} className="controls"/>
+                <MdSkipPrevious onClick={this.props.handlePrev} className="controls"/>
+                {playpause}
+                <MdSkipNext onClick={this.props.handleNext} className="controls"/>
             </div>
         );
         const equalizer = (
-            <img className="equalizer" src="https://raw.githubusercontent.com/abhishekpathak/melody/master/img/music-playing.gif" alt="Equalizer" />
+            <img className="equalizer" src={this.props.playing? config.EQUALIZER_IMAGE : config.EQUALIZER_STILL_IMAGE} alt="Equalizer" />
         )
 
         const navbarInstance = (
@@ -382,7 +395,7 @@ class Footer extends React.Component {
          );
 
         return (
-        <Navbar fixedBottom className="footer">
+        <Navbar fixedBottom fluid className="footer">
             {navbarInstance}
         </Navbar>
         )

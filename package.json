@@ -10,6 +10,7 @@
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.6.1",
     "react-facebook-login": "^3.6.2",
+    "react-icons": "2.2.5",
     "react-scripts": "1.0.8",
     "react-tap-event-plugin": "2.0.1",
     "react-youtube": "^7.4.0"
