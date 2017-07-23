@@ -1,4 +1,5 @@
 import {config} from './config.js';
+import {youtubeToHarmonyArray} from './adapters.js'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Youtube from 'react-youtube';
@@ -149,11 +150,12 @@ class Recommendations extends React.Component {
     }
 
     getRecommendations(videoid) {
-        var uri = encodeURI(process.env.REACT_APP_API_URL + "/recommendations?q=" + videoid);
+        var uri = encodeURI("https://www.googleapis.com/youtube/v3/search?videoEmbeddable=any&part=snippet&fields=items(id,snippet)&type=video&maxResults=20&key=AIzaSyCbfxhEDNKXXPFbmjttsqFvGHxjvTlfVxg&relatedToVideoId="+ videoid)
         fetch(uri).then((response) => {
             return response.json();
             }).then((data) => {
-                this.setState({recommendations: data});
+                let recommendations = youtubeToHarmonyArray(data);
+                this.setState({recommendations: recommendations});
             });
     }
 
@@ -162,7 +164,7 @@ class Recommendations extends React.Component {
             <Recommendation
             key={recommendation.videoid}
             videoid={recommendation.videoid}
-            value={recommendation.name}
+            value={recommendation.track}
             enqueue={this.props.enqueue}
             />
         );
@@ -288,17 +290,15 @@ class Header extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleSubmit(){
-        var uri = encodeURI(process.env.REACT_APP_API_URL + "/query?q=" + this.state.value);
-        console.log(uri);
+    handleSubmit() {
+        const uri_prefix = "https://www.googleapis.com/youtube/v3/search?videoEmbeddable=any&key=AIzaSyCbfxhEDNKXXPFbmjttsqFvGHxjvTlfVxg&part=snippet&fields=items(id,snippet)&type=video&maxResults=5&q="
+        const uri = encodeURI(uri_prefix + this.state.value);
         fetch(uri).then((response) => {
             return response.json();
-            }).then((data) => {
-                // TODO hotfix for now
-                data[0].track = data[0].name;
-                console.log(data[0]);
-                this.props.enqueue(data[0]);
-            });
+        }).then((data) => {
+            let search_results = youtubeToHarmonyArray(data);
+            this.props.enqueue(search_results[0]);
+        });
     }
 
     render() {
