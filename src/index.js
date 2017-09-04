@@ -629,6 +629,57 @@ class Total extends React.Component {
     }
 }
 
+class Login extends React.Component {
+    render() {
+        const loginbutton = (
+            <FacebookLogin
+                appId={process.env.REACT_APP_APP_ID}
+                autoLoad={true}
+                fields="name,email,picture"
+                callback={responseFacebook}
+                icon="fa-facebook"
+                size="metro"
+            />
+        );
+
+        const welcome = (
+            <h4> Welcome to Harmony Music </h4>
+        );
+
+        const features = (
+            <ul> Features
+                <li> Search and add any youtube track to the playlist </li>
+                <li> Click the love button to store the track to your library </li>
+                <li> Never-ending playlist - Harmony automatically plays a track from your media library if the playlist ends.</li>
+                <li> View related tracks on the right side, click on any track to add it to the playlist. </li>
+                <li> More music sources like soundcloud, local mp3 files, dropbox coming soon.</li>
+            </ul>
+        );
+
+        const disclaimer = (
+            <ul> Privacy: we only access the following :
+                <li>email - to store your loved tracks </li>
+                <li>profile picture - to display on the app </li>
+            </ul>
+        );
+
+        return (
+            <Grid fluid>
+                <Row>
+                    <Col lg={3}></Col>
+                    <Col lg={6}>
+                        <Row bsClass="login-row"> {welcome} </Row>
+                        <Row bsClass="login-row"> {features} </Row>
+                        <Row bsClass="login-row"> {loginbutton} </Row>
+                        <Row bsClass="login-row"> {disclaimer} </Row>
+                    </Col>
+                    <Col lg={3}></Col>
+                </Row>
+            </Grid>
+        );
+    }
+}
+
 const responseFacebook = (response) => {
   let user = {
     name: null,
@@ -646,15 +697,6 @@ const responseFacebook = (response) => {
         document.getElementById('root')
         );
   }
-}
-ReactDOM.render(
-  <FacebookLogin
-    appId={process.env.REACT_APP_APP_ID}
-    autoLoad={true}
-    fields="name,email,picture"
-    callback={responseFacebook}
-    icon="fa-facebook"
-    size="metro"
-  />,
-  document.getElementById('root')
-);
+};
+
+ReactDOM.render(<Login/>, document.getElementById('root'));

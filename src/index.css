@@ -95,6 +95,15 @@ body {
     color:orangered;
 }
 
+.login-row {
+    padding:30px;
+    text-align: justify;
+}
+
+.login-row ul {
+    list-style-position: inside;
+}
+
 
 /** marquee for scrolling song ticker **/
 /* Make it a marquee */
