@@ -150,7 +150,7 @@ class Recommendations extends React.Component {
     }
 
     getRecommendations(videoid) {
-        var uri = encodeURI("https://www.googleapis.com/youtube/v3/search?videoEmbeddable=any&part=snippet&fields=items(id,snippet)&type=video&maxResults=20&key=" + process.env.YOUTUBE_API_KEY + "&relatedToVideoId="+ videoid)
+        var uri = encodeURI("https://www.googleapis.com/youtube/v3/search?videoEmbeddable=any&part=snippet&fields=items(id,snippet)&type=video&maxResults=20&key=" + process.env.REACT_APP_YOUTUBE_API_KEY + "&relatedToVideoId="+ videoid)
         fetch(uri).then((response) => {
             return response.json();
             }).then((data) => {
@@ -291,7 +291,7 @@ class Header extends React.Component {
     }
 
     handleSubmit() {
-        const uri_prefix = "https://www.googleapis.com/youtube/v3/search?videoEmbeddable=any&key=" + process.env.YOUTUBE_API_KEY + "&part=snippet&fields=items(id,snippet)&type=video&maxResults=5&q="
+        const uri_prefix = "https://www.googleapis.com/youtube/v3/search?videoEmbeddable=any&key=" + process.env.REACT_APP_YOUTUBE_API_KEY + "&part=snippet&fields=items(id,snippet)&type=video&maxResults=5&q="
         const uri = encodeURI(uri_prefix + this.state.value);
         fetch(uri).then((response) => {
             return response.json();
