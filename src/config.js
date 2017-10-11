@@ -12,6 +12,6 @@ export const config = {
         seek: 0,
         playing: false
     },
-    EQUALIZER_IMAGE: 'http://tropicanahd.net/images/equalizer.gif',
+    EQUALIZER_IMAGE: 'https://thumbs.gfycat.com/OblongWanIchneumonfly-max-1mb.gif',
     EQUALIZER_STILL_IMAGE: 'http://www.bluepiemusic.com/gif/equalizer_Still.gif'
 };
